@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>DEVOÇÃO</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: black;
+            color: white;
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+        }
+
+        .screen {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            padding: 25px;
+        }
+
+        /* PRIMEIRA PÁGINA */
+
+        #imagePage {
+            display: flex;
+        }
+
+        .imageGrid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            width: 90%;
+            max-width: 500px;
+        }
+
+        .imageButton {
+            border: none;
+            padding: 0;
+            background: transparent;
+            cursor: pointer;
+            aspect-ratio: 1 / 1;
+        }
+
+        .imageButton img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* SEGUNDA PÁGINA */
+
+        #wordPage {
+            display: none;
+        }
+
+        .words {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            width: 100%;
+            max-width: 550px;
+        }
+
+        .word {
+            background: #111;
+            border: 1px solid #444;
+            color: white;
+            height: 48px;
+            cursor: pointer;
+            font-size: 14px;
+            letter-spacing: 1px;
+            transition: 0.2s;
+        }
+
+        .word:hover {
+            border-color: white;
+        }
+
+        .word.selected {
+            background: #333;
+            border-color: white;
+            color: #888;
+        }
+
+        /* CAIXA DE PALAVRAS */
+
+        .selectionBox {
+            width: 100%;
+            max-width: 550px;
+            min-height: 65px;
+            border: 1px solid #555;
+            background: #080808;
+            margin-top: 30px;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            text-align: center;
+            color: white;
+            font-size: 15px;
+            letter-spacing: 1px;
+        }
+
+        .placeholder {
+            color: #666;
+        }
+
+        /* BOTÃO */
+
+        #insert {
+            width: 100%;
+            max-width: 550px;
+            height: 45px;
+            margin-top: 18px;
+            background: white;
+            color: black;
+            border: none;
+            font-weight: bold;
+            letter-spacing: 4px;
+            cursor: pointer;
+        }
+
+        #insert:hover {
+            background: #ccc;
+        }
+
+        #error {
+            display: none;
+            color: red;
+            font-weight: bold;
+            letter-spacing: 3px;
+            margin-top: 25px;
+        }
+
+        /* RESULTADO */
+
+        #success {
+            display: none;
+            text-align: center;
+            line-height: 2.5;
+            font-size: 19px;
+            letter-spacing: 1px;
+        }
+
+        /* CELULARES */
+
+        @media (max-width: 450px) {
+
+            .imageGrid {
+                gap: 7px;
+            }
+
+            .words {
+                gap: 7px;
+            }
+
+            .word {
+                font-size: 11px;
+            }
+
+            #success {
+                font-size: 15px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+
+    <!-- PRIMEIRA PÁGINA: IMAGENS -->
+
+    <div class="screen" id="imagePage">
+
+        <div class="imageGrid" id="imageGrid">
+
+            <!-- AS IMAGENS SERÃO INSERIDAS PELO JAVASCRIPT -->
+
+        </div>
+
+    </div>
+
+
+    <!-- SEGUNDA PÁGINA: PALAVRAS -->
+
+    <div class="screen" id="wordPage">
+
+        <div class="words" id="words">
+
+        </div>
+
+        <div class="selectionBox" id="selectionBox">
+
+            <span class="placeholder">PALAVRAS SELECIONADAS</span>
+
+        </div>
+
+        <button id="insert" onclick="verificar()">
+            INSERIR
+        </button>
+
+        <p id="error">ACESSO NEGADO</p>
+
+    </div>
+
+
+    <!-- RESULTADO FINAL -->
+
+    <div class="screen" id="success">
+
+        <div>
+            <p>o = 0</p>
+
+            <p>e = 1,5x2</p>
+
+            <p>
+                a = [(3! + √144) ÷ (log₁₀(100) + cos(0))] - sen(π/2) - 1
+            </p>
+        </div>
+
+    </div>
+
+
+    <script>
+
+        /* PRIMEIRA PÁGINA: IMAGENS */
+
+        const imageGrid = document.getElementById("imageGrid");
+
+        const imagemNormal = "imagem-normal.png";
+        const imagemDiferente = "imagem-diferente.png";
+
+        // 16 imagens, com apenas uma diferente
+
+        let posicaoDiferente = Math.floor(Math.random() * 16);
+
+        for (let i = 0; i < 16; i++) {
+
+            const botao = document.createElement("button");
+
+            botao.className = "imageButton";
+
+            const imagem = document.createElement("img");
+
+            if (i === posicaoDiferente) {
+
+                imagem.src = imagemDiferente;
+
+                botao.addEventListener("click", function() {
+
+                    document.getElementById("imagePage").style.display = "none";
+
+                    document.getElementById("wordPage").style.display = "flex";
+
+                });
+
+            } else {
+
+                imagem.src = imagemNormal;
+
+            }
+
+            botao.appendChild(imagem);
+
+            imageGrid.appendChild(botao);
+
+        }
+
+
+        /* SEGUNDA PÁGINA: SELEÇÃO DE PALAVRAS */
+
+        const palavras = [
+            "MEU",
+            "SEU",
+            "AMOR",
+            "TODO",
+            "É",
+            "LUXUOSO",
+            "PARA",
+            "NOSSO",
+            "TI",
+            "INESQUECÍVEL",
+            "NADA",
+            "PAIXÃO",
+            "CELESTIAL",
+            "MUITO",
+            "O"
+        ];
+
+        const palavrasCorretas = [
+            "MEU",
+            "TODO",
+            "É",
+            "PARA",
+            "TI"
+        ];
+
+        const wordsContainer = document.getElementById("words");
+
+        const selectionBox = document.getElementById("selectionBox");
+
+        let selecionadas = [];
+
+        let bloqueado = false;
+
+
+        palavras.forEach(function(palavra) {
+
+            const botao = document.createElement("button");
+
+            botao.className = "word";
+
+            botao.textContent = palavra;
+
+            botao.addEventListener("click", function() {
+
+                if (bloqueado) return;
+
+                const indice = selecionadas.indexOf(palavra);
+
+                if (indice !== -1) {
+
+                    // Remove a palavra se ela já estiver selecionada
+
+                    selecionadas.splice(indice, 1);
+
+                    botao.classList.remove("selected");
+
+                } else {
+
+                    // Adiciona a palavra no final da sequência
+
+                    selecionadas.push(palavra);
+
+                    botao.classList.add("selected");
+
+                }
+
+                atualizarSelecao();
+
+            });
+
+            wordsContainer.appendChild(botao);
+
+        });
+
+
+        /* ATUALIZAR CAIXINHA */
+
+        function atualizarSelecao() {
+
+            selectionBox.innerHTML = "";
+
+            if (selecionadas.length === 0) {
+
+                selectionBox.innerHTML =
+                    '<span class="placeholder">PALAVRAS SELECIONADAS</span>';
+
+                return;
+
+            }
+
+            selecionadas.forEach(function(palavra) {
+
+                const span = document.createElement("span");
+
+                span.textContent = palavra;
+
+                selectionBox.appendChild(span);
+
+            });
+
+        }
+
+
+        /* VERIFICAÇÃO */
+
+        function verificar() {
+
+            if (bloqueado) return;
+
+            const correta =
+                selecionadas.length === palavrasCorretas.length &&
+                selecionadas.every(function(palavra, index) {
+
+                    return palavra === palavrasCorretas[index];
+
+                });
+
+            if (correta) {
+
+                document.getElementById("wordPage").style.display = "none";
+
+                document.getElementById("success").style.display = "flex";
+
+            } else {
+
+                bloqueado = true;
+
+                document.getElementById("error").style.display = "block";
+
+                document.querySelectorAll(".word").forEach(function(botao) {
+
+                    botao.disabled = true;
+
+                });
+
+                document.getElementById("insert").disabled = true;
+
+            }
+
+        }
+
+    </script>
+
+</body>
+
+</html>
